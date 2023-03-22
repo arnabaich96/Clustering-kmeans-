@@ -1,0 +1,195 @@
+---
+title: "Homework-10"
+author: "Arnab Aich"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library(mclust)
+library(factoextra)
+library(ggplot2)
+library(sClust)
+library(gridExtra)
+library(kernlab)
+```
+
+**Mclust :** *Model-based clustering based on parameterized finite Gaussian mixture models. Models are estimated by EM algorithm initialized by hierarchical model-based agglomerative clustering. The optimal model is then selected according to BIC (Based on R documentation).*
+
+# 1.
+
+## a)
+
+-   Import Data
+
+```{r}
+
+x1 <- read_csv("D:/OneDrive - Florida State University/MyFSU_OneDrive/FSU Course Work/5635/Datasets/x1.txt", 
+    col_names = FALSE,show_col_types = FALSE)
+```
+
+-   K means clustering and plot for Initial Clusters
+
+```{r}
+set.seed(1)
+K_mean = kmeans(x1,centers = 2)
+init = fviz_cluster(K_mean,data = x1,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex", main = "Initial K-Means plot",ellipse = FALSE,  
+             ggtheme = theme_bw())
+```
+
+-   Final clustering using Multivariate Gaussian models
+
+```{r}
+set.seed(2)
+cluster = Mclust(x1,G=2,initialization = list(K_mean$centers)) 
+final = fviz_cluster(cluster,data = x1,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex", main = "Final plot",ellipse = FALSE, 
+             ggtheme = theme_bw())
+grid.arrange(init, final, nrow=1)
+
+rm(init)
+rm(final)
+rm(cluster)
+rm(K_mean)
+```
+
+## b)
+
+-   Import Data
+
+```{r}
+
+x2 <- read_csv("D:/OneDrive - Florida State University/MyFSU_OneDrive/FSU Course Work/5635/Datasets/x2.txt", 
+    col_names = FALSE,show_col_types = FALSE)
+```
+
+-   K-means clustering and plot for Initial Clusters
+
+```{r}
+set.seed(3)
+K_mean = kmeans(x2,centers = 2)
+init = fviz_cluster(K_mean,data = x1,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex", main = "Initial K-Means plot", ellipse = FALSE,  
+             ggtheme = theme_bw())
+```
+
+-   Final clustering using Multivariate Gaussian models
+
+```{r}
+set.seed(4)
+cluster = Mclust(x2,G=2,initialization = list(K_mean$centers)) 
+final = fviz_cluster(cluster,data = x2,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex", main = "Final plot",ellipse = FALSE, 
+             ggtheme = theme_bw())
+grid.arrange(init, final, nrow=1)
+
+rm(init)
+rm(final)
+rm(cluster)
+rm(K_mean)
+```
+
+## c)
+
+-   Import Data
+
+```{r}
+pts <-  read_csv("D:/OneDrive - Florida State University/MyFSU_OneDrive/FSU Course Work/5635/Datasets/pts.txt", 
+    col_names = FALSE,show_col_types = FALSE)
+```
+
+-   K-means clustering and plot for Initial Clusters
+
+```{r}
+set.seed(5)
+K_mean = kmeans(pts,centers = 3)
+init = fviz_cluster(K_mean,data = pts,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex",  main = "Initial K-Means plot",ellipse = FALSE,  
+             ggtheme = theme_bw())
+```
+
+-   Final clustering using Multivariate Gaussian models
+
+```{r}
+set.seed(6)
+cluster = Mclust(pts,G=3,initialization = list(K_mean$centers)) 
+final = fviz_cluster(cluster,data = pts,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex", main = "Final plot",ellipse = FALSE, 
+             ggtheme = theme_bw())
+grid.arrange(init, final, nrow=1)
+
+rm(init)
+rm(final)
+rm(cluster)
+rm(K_mean)
+```
+
+## d)
+
+-   K-means clustering and plot for Initial Clusters
+
+```{r}
+set.seed(7)
+K_mean = kmeans(pts,centers = 10)
+init = fviz_cluster(K_mean,data = pts,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex",  main = "Initial K-Means plot",ellipse = FALSE,  
+             ggtheme = theme_bw())
+```
+
+-   Final clustering using Multivariate Gaussian models
+
+```{r}
+set.seed(8)
+cluster = Mclust(pts,G=10,initialization = list(K_mean$centers)) 
+final = fviz_cluster(cluster,data = pts,show.clust.cent = TRUE,stand = TRUE,geom = "point",
+             ellipse.type = "convex", main = "Final plot",ellipse = FALSE, 
+             ggtheme = theme_bw())
+grid.arrange(init, final, nrow=1)
+
+rm(init)
+rm(final)
+rm(cluster)
+rm(K_mean)
+```
+
+# 2.
+
+**specc: Spectral Clustering:** *A spectral clustering algorithm. Clustering is performed by embedding the data into the subspace of the eigenvectors of an affinity matrix.*
+
+## a)
+
+```{r}
+Cluster = as.factor(specc(as.matrix(x1),centers = 2))
+data = data.frame(Cluster,as.matrix(x1))
+ggplot() +
+  geom_point(data = data, 
+             mapping = aes(x = X1, y = X2,colour = Cluster))+theme_bw()
+rm(data)
+rm(Cluster)
+```
+
+## b)
+
+```{r}
+Cluster = as.factor(specc(as.matrix(x2),centers = 2,kpar = list(sigma=0.15)))
+data = data.frame(Cluster,as.matrix(x2))
+ggplot() +
+  geom_point(data = data, 
+             mapping = aes(x = X1, y = X2,colour = Cluster))+theme_bw()
+rm(data)
+rm(Cluster)
+```
+
+## c)
+
+```{r}
+Cluster = as.factor(specc(as.matrix(pts),centers = 3))
+data = data.frame(Cluster,as.matrix(pts))
+ggplot() +
+  geom_point(data = data, 
+             mapping = aes(x = X1, y = X2,colour = Cluster))+theme_bw()
+rm(data)
+rm(Cluster)
+```
